@@ -118,9 +118,10 @@ def rename_photo_from_exif(drive, files_path_list):
 
 
         new_file_name = '_'.join([
+            str(image_data_time),  str(focal_length_35mm_film),
+            str(exposure_time), str(f_number), str(iso),
             str(camera_factory), str(camera_model), str(lens_model),
-            str(color_space), str(image_data_time), str(focal_length_35mm_film),
-            str(exposure_time), str(f_number), str(iso)
+            str(color_space)
         ])
         new_file_name = new_file_name + suffix
         new_file_name = replace_invalid_chars(new_file_name)
@@ -142,8 +143,8 @@ def rename_photo_from_exif(drive, files_path_list):
 
 
 if __name__ == '__main__':
-    files_dir = [r'C:\Users\Administrator\Pictures\Photos\摄影作品\人像',]
-    drive = 'C:\\'
+    files_dir = [r'D:\Pictures\temp',]
+    drive = 'D:\\'
     files_path_list = get_files_list(files_dir)
 
     rename_photo_from_exif(drive, files_path_list)
