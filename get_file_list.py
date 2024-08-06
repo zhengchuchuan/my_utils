@@ -34,18 +34,20 @@ def get_file_path_list(file_paths, suffixes=None, prefix=None, file_name_pattern
     return filename_list
 
 if __name__ == '__main__':
-    data_dirs = [r'D:\wayho\oil_detection\yolov5\dataset\oil\lack_label\shadow_negative_samples\images']
+    data_dirs = [r'C:\Users\zcc\project\wayho\oil_detection\yolov5-7.0\dataset\oil\train',
+                 r'C:\Users\zcc\project\wayho\oil_detection\yolov5-7.0\dataset\oil\val',
+                 r'C:\Users\zcc\project\wayho\oil_detection\yolov5-7.0\dataset\oil\test_set_oil_since_513']
     save_dir = "exp"
     # list_name = '20240729_foreground_list.txt'
     # list_name = '20240729_background_list.txt'
-    list_name = 'shadow_negative_samples_path_list.txt'
+    list_name = 'data_list_all_20240805.txt'
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 
     prefix = None
     suffixes = ['.png', '.jpg', '.jpeg']
     file_name_pattern = '*'
-    process_folders = None  # 指定要处理的子文件夹名
+    process_folders = ['images']  # 指定要处理的子文件夹名
     ignore_files = ['classes.txt']  # 指定要忽略的文件名
 
     label_list = (get_file_path_list

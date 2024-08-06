@@ -39,5 +39,5 @@ def process_yolo_labels(folder_path):
 
 
 # 使用示例
-folder_path = r'D:\wayho\oil_detection\data\have_label\labels_0'  # 替换为你的文件夹路径
+folder_path = r'D:\wayho\oil_detection\data\have_label\labels_0'  #
 process_yolo_labels(folder_path)
