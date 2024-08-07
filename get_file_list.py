@@ -34,13 +34,14 @@ def get_file_path_list(file_paths, suffixes=None, prefix=None, file_name_pattern
     return filename_list
 
 if __name__ == '__main__':
-    data_dirs = [r'C:\Users\zcc\project\wayho\oil_detection\yolov5-7.0\dataset\oil\train',
-                 r'C:\Users\zcc\project\wayho\oil_detection\yolov5-7.0\dataset\oil\val',
-                 r'C:\Users\zcc\project\wayho\oil_detection\yolov5-7.0\dataset\oil\test_set_oil_since_513']
+    data_dirs = [r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_20240806_one_label\source\202404',
+                 r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_20240806_one_label\source\202405',
+                 r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_20240806_one_label\source\202406',
+                 r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_20240806_one_label\source\202407']
     save_dir = "exp"
     # list_name = '20240729_foreground_list.txt'
     # list_name = '20240729_background_list.txt'
-    list_name = 'data_list_all_20240805.txt'
+    list_name = 'data_list_04-07_20240807.txt'
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 

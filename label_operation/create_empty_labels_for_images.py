@@ -24,5 +24,5 @@ def create_empty_labels_for_images(directory):
 
 
 # 指定图像文件夹路径
-images_folder_path = r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_20240806_one_label\negative_examples\202406\images'
+images_folder_path = r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_20240806_one_label\negative_examples\202407\images'
 create_empty_labels_for_images(images_folder_path)
