@@ -1,5 +1,7 @@
 import os
 
+from tqdm import tqdm
+
 
 def process_yolo_labels(folder_path):
     # 列出文件夹中的所有文件
@@ -9,7 +11,7 @@ def process_yolo_labels(folder_path):
     txt_files = [f for f in files if f.endswith('.txt') and f != 'classes.txt']
 
     # 遍历每个TXT文件
-    for txt_file in txt_files:
+    for txt_file in tqdm(txt_files):
         file_path = os.path.join(folder_path, txt_file)
 
         # 读取文件内容
@@ -39,5 +41,5 @@ def process_yolo_labels(folder_path):
 
 
 # 使用示例
-folder_path = r'D:\wayho\oil_detection\data\have_label\labels_0'  #
+folder_path = r'D:\wayho\oil_detection\data\source\202406\labels'  #
 process_yolo_labels(folder_path)
