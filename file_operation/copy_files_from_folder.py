@@ -1,19 +1,28 @@
-import os
 import shutil
-from my_utils.file_operations.file_batch_processing import copy_files_from_folder
+import os
 
 
-if __name__ == '__main__':
-    source_folder = r'D:\Documents\DataSet\ZDRH\poppy_top5_more\XmlDrawRect_all'
-    destination_folder = r'D:\Documents\DataSet\ZDRH\poppy_top5_more\XmlDrawRect_split'
-    # 方式一:移动文本文件中的文件名
-    # txt_path = r''
-    # with open(txt_path, 'r') as file:
-    #     file_names = file.read().splitlines()
-    # 方式二:获取列表的形式
-    folder_path = r'D:\Documents\DataSet\ZDRH\poppy_top5_more\img'
-    file_name_list = [f for f in os.listdir(folder_path)]
+def copy_files(file_list_path, target_directory):
+    # 确保目标目录存在，不存在则创建
+    if not os.path.exists(target_directory):
+        os.makedirs(target_directory)
 
-    # 移动文件夹中的指定文件
-    copy_files_from_folder(source_folder, destination_folder, file_name_list)
-    print("All files moved.")
+    # 读取文件列表
+    with open(file_list_path, 'r') as file:
+        file_paths = file.readlines()
+
+    # 去除每行的换行符
+    file_paths = [file_path.strip() for file_path in file_paths]
+
+    # 复制文件到目标目录
+    for file_path in file_paths:
+        if os.path.exists(file_path):
+            shutil.copy(file_path, target_directory)
+        else:
+            print(f"文件 {file_path} 不存在，无法复制。")
+
+
+# 示例用法
+file_list_path = '/home/cia005/ZCC/oil/yolov5-7.0/dataset/data_list/20240806_test_list.txt'  # 存储文件路径的文件列表
+target_directory = '/home/cia005/ZCC/oil/yolov5-7.0/dataset/test'  # 目标目录
+copy_files(file_list_path, target_directory)

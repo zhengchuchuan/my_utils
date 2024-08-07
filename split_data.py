@@ -4,7 +4,6 @@ import sys
 import random
 import glob
 import os
-from datetime import datetime
 
 # 获取当前脚本文件所在目录的上级目录路径
 current_dir = os.path.dirname(os.path.realpath(__file__))
@@ -21,10 +20,10 @@ def create_folder_if_not_exists(folder_path):
         print(f"文件夹 '{folder_path}' 已经存在。")
 
 
-def split_dataset(file_path_list, train_ratio=0.8, val_ratio=0.15):
+def split_dataset(hdr_files, train_ratio=0.8, val_ratio=0.2):
     """
     划分数据集为训练集、验证集和测试集
-    :param file_path_list: 包含所有数据文件的列表
+    :param hdr_files: 包含所有数据文件的列表
     :param train_ratio: 训练集的比例
     :param val_ratio: 验证集的比例
     :return: 训练集、验证集和测试集（如果测试集比例为0，则返回训练集和验证集）
@@ -33,24 +32,30 @@ def split_dataset(file_path_list, train_ratio=0.8, val_ratio=0.15):
     if train_ratio + val_ratio > 1.0:
         raise ValueError("训练集和验证集的比例之和不能大于1")
 
+
     # 打乱文件列表
-    random.shuffle(file_path_list)
+    random.shuffle(hdr_files)
 
     # 计算划分的索引
-    num_samples = len(file_path_list)
-    num_train = int(train_ratio * num_samples)
-    num_val = int(val_ratio * num_samples)
-    num_test = num_samples - num_train - num_val  # 剩余的部分作为测试集
+    num_samples = len(hdr_files)
 
-    # 划分数据集
-    train_data = file_path_list[:num_train]
-    val_data = file_path_list[num_train:num_train + num_val]
 
-    # 处理测试集为0的情况
-    if num_test == 0:
+    if train_ratio + val_ratio < 1.0:
+        num_train = int(train_ratio * num_samples)
+        num_val = int(val_ratio * num_samples)
+
+        # 划分数据集
+        train_data = hdr_files[:num_train]
+        val_data = hdr_files[num_train:num_train + num_val]
+        test_data = hdr_files[num_train + num_val:]
+    elif train_ratio + val_ratio == 1.0:
+        num_train = int(train_ratio * num_samples)
+
+        # 划分数据集
+        train_data = hdr_files[:num_train]
+        val_data = hdr_files[num_train:]
         test_data = []
-    else:
-        test_data = file_path_list[num_train + num_val:]
+
 
     # 打印划分结果
     print("Training data:", len(train_data))
@@ -61,33 +66,60 @@ def split_dataset(file_path_list, train_ratio=0.8, val_ratio=0.15):
 
 
 
+def get_data_path(file_paths, suffixes=['.hdr'], prefix=None, train_ratio=0.8, val_ratio=0.1):
+    train_list = []
+    val_list = []
+    test_list = []
+    # 每个文件夹路径
+    for file_path in file_paths:
+        # 处理文件夹的子目录
+        for root, dirs, files in os.walk(file_path):
+            dir_paths = []
+            root_dir = os.path.basename(root)
+            # 处理指定的子文件夹
+            if root_dir == 'images':
+                # 获取文件路径列表
+                for suffix in suffixes:
+                    dir_paths.extend(glob.glob(fr"{root}/*{suffix}"))
+                # 将路径前加上前缀
+                if prefix is not None:
+                    dir_paths = [os.path.join(prefix, path) for path in dir_paths]  #######
+                # 确保每个文件夹下都有训练集、验证集和测试集
+                train_part, val_part, test_part = split_dataset(hdr_files=dir_paths, train_ratio=train_ratio, val_ratio=val_ratio)
+
+                train_list.extend(train_part)
+                val_list.extend(val_part)
+                test_list.extend(test_part)
+
+    return train_list, val_list, test_list
 
 
 
-file_path_lists = [r'D:\Project\python_project\my_utils\exp\labeled_image_path_list.txt']
 
-save_dir = "exp"
+data_dirs = ['/home/cia005/ZCC/oil/data/source', ]
 
-current_time = datetime.now()
-formatted_time = current_time.strftime('%Y-%m-%d-%H-%M')
-
+save_dir = "/home/cia005/ZCC/oil/yolov5-5.0/dataset/data_list"
+# current_time = get_current_time()
+# save_dir = os.path.join(save_dir, current_time)
 create_folder_if_not_exists(save_dir)
-file_paths_lists = []
-for file_path_list in file_path_lists:
-    with open(file_path_list, 'r') as fin:
-        file_paths = [line.replace('\n', '') for line in fin]
-        file_paths_lists.extend(file_paths)
+
+prefix = None
+suffixes = ['.png', '.jpg', '.jpeg']
 
 train_list = []
 val_list = []
 test_list = []
 
-train_list, val_list, test_list = split_dataset(file_path_list=file_paths_lists, train_ratio=0.8, val_ratio=0.1)
+train_list, val_list, test_list = get_data_path(file_paths=data_dirs, suffixes=suffixes, prefix=prefix, train_ratio=0.8, val_ratio=0.1)
 
-description = None
-save_train_path = os.path.join(save_dir, f"train_list_{formatted_time}.txt")
-save_val_path = os.path.join(save_dir, f"val_list_{formatted_time}.txt")
-save_test_path = os.path.join(save_dir, f"test_list_{formatted_time}.txt")
+train_list.sort()
+val_list.sort()
+test_list.sort()
+
+description = '20240806'
+save_train_path = os.path.join(save_dir, f"{description}_train_list.txt")
+save_val_path = os.path.join(save_dir, f"{description}_val_list.txt")
+save_test_path = os.path.join(save_dir, f"{description}_test_list.txt")
 
 with open(save_train_path, "w") as file:
     for string in train_list:
