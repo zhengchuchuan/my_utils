@@ -20,9 +20,9 @@ def create_empty_labels_for_images(directory):
             with open(label_file_path, 'w') as file:
                 pass  # 只创建空文件，不写入内容
 
-            print(f"Created empty label for {filename}")
+            # print(f"Created empty label for {filename}")
 
 
 # 指定图像文件夹路径
-images_folder_path = r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_20240806_one_label\negative_examples\202407\images'
+images_folder_path = r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_20240806_one_label\all_images_except_missed_detections\04_汇总无框有标签文件的图像\背景\植被\images'
 create_empty_labels_for_images(images_folder_path)

@@ -4,6 +4,7 @@ import sys
 import random
 import glob
 import os
+from datetime import datetime
 
 # 获取当前脚本文件所在目录的上级目录路径
 current_dir = os.path.dirname(os.path.realpath(__file__))
@@ -12,12 +13,6 @@ parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
 
 
-def create_folder_if_not_exists(folder_path):
-    if not os.path.exists(folder_path):
-        os.makedirs(folder_path)
-        print(f"文件夹 '{folder_path}' 不存在，已创建。")
-    else:
-        print(f"文件夹 '{folder_path}' 已经存在。")
 
 
 def split_dataset(hdr_files, train_ratio=0.8, val_ratio=0.2):
@@ -95,40 +90,43 @@ def get_data_path(file_paths, suffixes=['.hdr'], prefix=None, train_ratio=0.8, v
 
 
 
+if __name__ == '__main__':
+    data_dirs = [r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_20240806_one_label\source\202404',
+                 r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_20240806_one_label\source\202405',
+                 r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_20240806_one_label\source\202406',
+                 r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_20240806_one_label\source\202407',
+                 ]
+    save_dir = "exp"
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
 
-data_dirs = ['/home/cia005/ZCC/oil/data/source', ]
+    prefix = None
+    suffixes = ['.png', '.jpg', '.jpeg']
 
-save_dir = "/home/cia005/ZCC/oil/yolov5-5.0/dataset/data_list"
-# current_time = get_current_time()
-# save_dir = os.path.join(save_dir, current_time)
-create_folder_if_not_exists(save_dir)
+    train_list = []
+    val_list = []
+    test_list = []
 
-prefix = None
-suffixes = ['.png', '.jpg', '.jpeg']
+    train_list, val_list, test_list = get_data_path(file_paths=data_dirs, suffixes=suffixes, prefix=prefix, train_ratio=0.8, val_ratio=0.2)
 
-train_list = []
-val_list = []
-test_list = []
+    train_list.sort()
+    val_list.sort()
+    test_list.sort()
 
-train_list, val_list, test_list = get_data_path(file_paths=data_dirs, suffixes=suffixes, prefix=prefix, train_ratio=0.8, val_ratio=0.1)
+    now = datetime.now()
+    current_date = now.strftime("%Y%m%d")
+    save_train_path = os.path.join(save_dir, f"{current_date}_train_list.txt")
+    save_val_path = os.path.join(save_dir, f"{current_date}_val_list.txt")
+    save_test_path = os.path.join(save_dir, f"{current_date}_test_list.txt")
 
-train_list.sort()
-val_list.sort()
-test_list.sort()
+    with open(save_train_path, "w") as file:
+        for string in train_list:
+            file.write(string + "\n")
 
-description = '20240806'
-save_train_path = os.path.join(save_dir, f"{description}_train_list.txt")
-save_val_path = os.path.join(save_dir, f"{description}_val_list.txt")
-save_test_path = os.path.join(save_dir, f"{description}_test_list.txt")
+    with open(save_val_path, "w") as file:
+        for string in val_list:
+            file.write(string + "\n")
 
-with open(save_train_path, "w") as file:
-    for string in train_list:
-        file.write(string + "\n")
-
-with open(save_val_path, "w") as file:
-    for string in val_list:
-        file.write(string + "\n")
-
-with open(save_test_path, "w") as file:
-    for string in test_list:
-        file.write(string + "\n")
+    with open(save_test_path, "w") as file:
+        for string in test_list:
+            file.write(string + "\n")

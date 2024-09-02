@@ -1,16 +1,17 @@
 import glob
 import os
 import sys
+from datetime import datetime
+from tqdm import tqdm
 
-
-def get_file_path_list(file_paths, suffixes=None, prefix=None, file_name_pattern=None, process_folders=None,
-                  ignore_files=None):
+def get_data_path(file_paths, suffixes=None, prefix=None, file_name_pattern=None, process_folders=None,
+                  ignore_files=None, return_type='path'):
     filename_list = []
 
     # 每个文件夹路径
-    for file_path in file_paths:
-        # 处理文件夹的子目录
-        for root, dirs, files in os.walk(file_path):
+    for file_path in tqdm(file_paths, desc="Processing directories"):
+        # 处理文件夹的子目录，并添加进度条
+        for root, dirs, files in tqdm(os.walk(file_path), desc=f"Walking through {file_path}", leave=False):
             dir_paths = []
             root_dir = os.path.basename(root)
 
@@ -29,37 +30,36 @@ def get_file_path_list(file_paths, suffixes=None, prefix=None, file_name_pattern
                 if prefix is not None:
                     dir_paths = [os.path.join(prefix, path) for path in dir_paths]
 
+                # 根据 return_type 参数决定返回的是文件路径还是文件名
+                if return_type == 'filename':
+                    dir_paths = [os.path.basename(path) for path in dir_paths]
+
                 filename_list.extend(dir_paths)
 
     return filename_list
 
-if __name__ == '__main__':
-    data_dirs = [r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_20240806_one_label\source\202404',
-                 r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_20240806_one_label\source\202405',
-                 r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_20240806_one_label\source\202406',
-                 r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_20240806_one_label\source\202407']
-    save_dir = "exp"
-    # list_name = '20240729_foreground_list.txt'
-    # list_name = '20240729_background_list.txt'
-    list_name = 'data_list_04-07_20240807.txt'
-    if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
+data_dirs = [r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_20240806_one_label\all_images_except_missed_detections\03_根据推理图像的分类结果']
+save_dir = "data_list"
+now = datetime.now()
+list_name = now.strftime("%Y%m%d") + '_' + 'temp.txt'
+if not os.path.exists(save_dir):
+    os.makedirs(save_dir)
 
-    prefix = None
-    suffixes = ['.png', '.jpg', '.jpeg']
-    file_name_pattern = '*'
-    process_folders = ['images']  # 指定要处理的子文件夹名
-    ignore_files = ['classes.txt']  # 指定要忽略的文件名
+prefix = 'data'
+suffixes = ['.png', '.jpg', '.jpeg']
+file_name_pattern = '*'
+process_folders = None  # 指定要处理的子文件夹名
+ignore_files = ['classes.txt']  # 指定要忽略的文件名
+return_type = 'filename'  # 选择返回文件名还是路径 path or filename
 
-    label_list = (get_file_path_list
-                  (file_paths=data_dirs, suffixes=suffixes, prefix=prefix, file_name_pattern=file_name_pattern,
-                               process_folders=process_folders, ignore_files=ignore_files))
+label_list = get_data_path(file_paths=data_dirs, suffixes=suffixes, prefix=prefix, file_name_pattern=file_name_pattern,
+                           process_folders=process_folders, ignore_files=ignore_files, return_type=return_type)
 
-    print(len(label_list))
-    label_list.sort()
+print(len(label_list))
+label_list.sort()
 
-    list_save_path = os.path.join(save_dir, list_name)
+list_save_path = os.path.join(save_dir, list_name)
 
-    with open(list_save_path, "w", encoding='utf-8') as file:
-        for string in label_list:
-            file.write(string + "\n")
+with open(list_save_path, "w", encoding='utf-8') as file:
+    for string in tqdm(label_list, desc="Writing to file"):
+        file.write(string + "\n")
