@@ -38,10 +38,11 @@ def get_data_path(file_paths, suffixes=None, prefix=None, file_name_pattern=None
 
     return filename_list
 
-data_dirs = [r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_20240806_one_label\all_images_except_missed_detections\03_根据推理图像的分类结果']
+data_dirs = [r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_one_label\all_images_except_missed_detections\03_根据推理图像的分类结果\疑似图像\images']
 save_dir = "data_list"
 now = datetime.now()
-list_name = now.strftime("%Y%m%d") + '_' + 'temp.txt'
+# list_name = now.strftime("%Y%m%d") + '_' + 'temp.txt'
+list_name = 'temp2.txt'
 if not os.path.exists(save_dir):
     os.makedirs(save_dir)
 

@@ -28,9 +28,9 @@ def process_yolo_labels(folder_path):
 
                 # 更新类别索引
                 if class_index == 0:
-                    continue
-                elif class_index in {1, 2, 3}:
-                    parts[0] = '0'
+                    parts[0] = '1'
+                # elif class_index in {1, 2, 3}:
+                #     parts[0] = '0'
 
                 # 重建行内容并添加到更新后的行列表中
                 updated_lines.append(' '.join(parts))
@@ -41,5 +41,5 @@ def process_yolo_labels(folder_path):
 
 
 # 使用示例
-folder_path = r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_20240806_one_label\generate_images\彩钢\labels'  #
+folder_path = r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_zcc\generate_images\20240807\labels'  #
 process_yolo_labels(folder_path)

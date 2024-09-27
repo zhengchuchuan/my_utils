@@ -62,9 +62,9 @@ def process_files(file_dir_1, file_dir_2, output_dir, file_extensions_1, file_ex
 
 
 if __name__ == "__main__":
-    file_dir_1 = r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_20240806_one_label\all_images_except_missed_detections\04_汇总无框有标签文件的图像\疑似油\images'
-    file_dir_2 = r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_20240806_one_label\all_images_except_missed_detections\04_汇总无框有标签文件的图像\疑似油\labels'
-    output_dir = r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_20240806_one_label\all_images_except_missed_detections\04_汇总无框有标签文件的图像\疑似油\temp'
+    file_dir_1 = r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_one_label\train\suspect\images'
+    file_dir_2 = r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_one_label\train\suspect\labels'
+    output_dir = r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_one_label\train\suspect\unused'
 
     # 指定文件扩展名
     file_extensions_1 = ('.jpg', '.png')

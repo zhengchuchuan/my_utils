@@ -2,15 +2,14 @@ import os
 import shutil
 from tqdm import tqdm
 
-from file_operation.delete_files_by_extension import extension
 from file_operation.gather_file_paths import gather_file_paths
 
 
-def transfer_files(file_paths, find_dir, dest_dir, target_folder_name=None, transfer_type='copy', extensions=None, direct_transfer=False):
+def transfer_files(file_path_list, dest_dir, find_dir, target_folder_name=None, transfer_type='copy', extensions=None):
     """
     根据标志位决定是查找文件还是直接根据路径复制或移动文件。
 
-    :param file_paths: 文件路径或文件名的列表
+    :param file_path_list: 文件路径或文件名的列表
     :param find_dir: 查找文件的目录
     :param dest_dir: 目标目录
     :param target_folder_name: 只处理指定名称的文件夹
@@ -26,8 +25,8 @@ def transfer_files(file_paths, find_dir, dest_dir, target_folder_name=None, tran
         os.makedirs(dest_dir)
 
     # 根据标志位决定是查找文件还是直接复制/移动
-    if direct_transfer:
-        for file_path in tqdm(file_paths, desc="Directly transferring files", unit="file"):
+    if find_dir is None:
+        for file_path in tqdm(file_path_list, desc="Directly transferring files", unit="file"):
             if os.path.exists(file_path):
                 dest_file = os.path.join(dest_dir, os.path.basename(file_path))
                 if transfer_type == 'copy':
@@ -37,8 +36,8 @@ def transfer_files(file_paths, find_dir, dest_dir, target_folder_name=None, tran
             else:
                 not_found_files.append(file_path)
     else:
-        for file_path in tqdm(file_paths, desc="Processing files", unit="file"):
-            found = False
+        for file_path in tqdm(file_path_list, desc="Processing files", unit="file"):
+            found_all = False
             base_name = os.path.basename(file_path)  # 从路径中提取文件名
 
             # 如果指定了后缀列表，则只处理同名文件+指定后缀的文件
@@ -53,6 +52,7 @@ def transfer_files(file_paths, find_dir, dest_dir, target_folder_name=None, tran
                 # 检查当前目录名是否为目标文件夹名
                 if os.path.basename(root) == target_folder_name or target_folder_name is None:
                     for potential_name in potential_names:
+                        found = False
                         if potential_name in files:
                             source_file = os.path.join(root, potential_name)
                             dest_file = os.path.join(dest_dir, potential_name)
@@ -67,11 +67,12 @@ def transfer_files(file_paths, find_dir, dest_dir, target_folder_name=None, tran
                                 shutil.move(source_file, dest_file)
 
                             found = True
-                    # 只找到一个文件就跳出循环
-                    if found:
-                        break
+                            found_all = True
+                        # 只找到一个文件找到文件后继续找下一个
+                        if found:
+                            continue
 
-            if not found:
+            if not found_all:
                 not_found_files.append(file_path)
 
     # 输出未找到的文件名或路径
@@ -85,25 +86,24 @@ if __name__ == "__main__":
     transfer_type = 'copy'  # 选择 'copy' 或 'move'
     # 需要移动的文件名或路径列表
     txt_file_paths = None
-    # txt_file_paths = [r'C:\Users\zcc\project\python_project\my_utils\data_list\duplicates.txt']
-    directories = None
-    directories =  [r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_20240806_one_label\all_images_except_missed_detections\03_根据推理图像的分类结果\误检背景\植被']
-
+    file_directories = None
+    txt_file_paths = [
+        # r'C:\Users\zcc\project\python_project\my_utils\data_list\20240902_temp.txt'
+    ]
+    file_directories =  [
+        r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_one_label\test\negative\images'
+    ]
     # 目标目录
-    dest_dir = r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_20240806_one_label\all_images_except_missed_detections\04_汇总无框有标签文件的图像\背景\植被\images'
+    dest_dir = r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_one_label\test\negative\images'
 
-
-    direct_transfer = False  # 设置为 True 时，直接根据路径复制或移动文件；为 False 时，查找文件
-
-    # 查找的文件夹
-    find_dir = r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\03标注数据以及模型文件\00数据和标签\dataset_20240806_one_label\all_images_except_missed_detections\01_source'
-    target_folder_name = None  # 只查找此名字的文件夹
-    # 查找所有指定后缀的文件
-    extensions = ['.png']
-    # extensions = None
+    # 查找的文件夹路径(遍历子文件夹)
+    find_dir = r'\\192.168.3.155\高光谱测试样本库\原油检测\00大庆现场测试\01数据'
+    target_folder_name = None  # 指定文件夹
+    get_list_extension = ['.png']
+    find_extensions = ['.img','.hdr']    # 查找所有指定后缀的文件
 
     # 获取文件路径列表
-    file_paths = gather_file_paths(txt_paths=txt_file_paths,directories=directories, extensions=extensions)
+    file_path_list = gather_file_paths(txt_paths=txt_file_paths,directories=file_directories, extensions=get_list_extension)
 
-    transfer_files(file_paths=file_paths, find_dir=find_dir, dest_dir=dest_dir, target_folder_name=target_folder_name,
-                   transfer_type=transfer_type, extensions=extensions, direct_transfer=direct_transfer)
+    transfer_files(file_path_list=file_path_list, dest_dir=dest_dir, find_dir=find_dir, target_folder_name=target_folder_name,
+                   transfer_type=transfer_type, extensions=find_extensions)
